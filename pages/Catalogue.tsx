@@ -4,6 +4,8 @@ import { Filter, X, Check, ChevronDown, Search, ArrowRight, Copy } from 'lucide-
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 
+const MotionDiv = motion.div as any;
+
 // 🔹 TypeScript Data Model
 interface Fabric {
   id: string;
@@ -492,7 +494,7 @@ Image : ${selectedFabric.image}`;
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <AnimatePresence>
                   {filteredFabrics.map((fabric) => (
-                    <motion.div
+                    <MotionDiv
                       layout
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
@@ -531,7 +533,7 @@ Image : ${selectedFabric.image}`;
                            </Button>
                         </div>
                       </div>
-                    </motion.div>
+                    </MotionDiv>
                   ))}
                 </AnimatePresence>
               </div>
@@ -551,14 +553,14 @@ Image : ${selectedFabric.image}`;
       <AnimatePresence>
         {selectedFabric && (
           <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
-             <motion.div 
+             <MotionDiv 
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
                exit={{ opacity: 0 }}
                onClick={() => setSelectedFabric(null)}
                className="absolute inset-0 bg-black/60 backdrop-blur-sm"
              />
-             <motion.div
+             <MotionDiv
                initial={{ opacity: 0, scale: 0.95, y: 20 }}
                animate={{ opacity: 1, scale: 1, y: 0 }}
                exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -624,7 +626,7 @@ Image : ${selectedFabric.image}`;
                     </div>
                   </div>
                </div>
-             </motion.div>
+             </MotionDiv>
           </div>
         )}
       </AnimatePresence>

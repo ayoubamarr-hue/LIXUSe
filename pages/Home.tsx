@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { createPageUrl } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight, Ruler, Shirt, Award, MapPin, Phone, Instagram, ArrowRight, Star } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { REVIEWS } from '../lib/data';
+
+const { Link } = ReactRouterDOM;
+const MotionDiv = motion.div as any;
 
 const HERO_IMAGES = [
   'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/FRONT%20STORE.jpg',
@@ -54,7 +57,7 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative h-screen overflow-hidden">
         <AnimatePresence mode="wait">
-          <motion.div
+          <MotionDiv
             key={currentHero}
             initial={{ opacity: 0, scale: 1.1 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -68,13 +71,13 @@ export default function Home() {
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-          </motion.div>
+          </MotionDiv>
         </AnimatePresence>
 
         {/* Hero Content */}
         <div className="relative z-10 h-full flex items-center">
           <div className="container mx-auto px-6 lg:px-12">
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5, duration: 0.8 }}
@@ -113,7 +116,7 @@ export default function Home() {
                   </Button>
                 </Link>
               </div>
-            </motion.div>
+            </MotionDiv>
           </div>
         </div>
 
@@ -134,7 +137,7 @@ export default function Home() {
       {/* Services Section */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-6 lg:px-12">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -144,7 +147,7 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-light text-[#2d4a3e] mt-4">
               Artisanat d'Exception
             </h2>
-          </motion.div>
+          </MotionDiv>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -164,7 +167,7 @@ export default function Home() {
                 description: 'Chaque pièce est confectionnée à la main selon les traditions sartoriales italiennes.'
               }
             ].map((service, idx) => (
-              <motion.div
+              <MotionDiv
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -175,7 +178,7 @@ export default function Home() {
                 <service.icon className="h-10 w-10 text-[#d4b896] mb-6" strokeWidth={1} />
                 <h3 className="text-xl font-medium text-[#2d4a3e] mb-4">{service.title}</h3>
                 <p className="text-gray-600 leading-relaxed">{service.description}</p>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
         </div>
@@ -184,7 +187,7 @@ export default function Home() {
       {/* Showcase Section */}
       <section className="py-24 bg-[#2d4a3e]">
         <div className="container mx-auto px-6 lg:px-12">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -194,11 +197,11 @@ export default function Home() {
             <h2 className="text-4xl md:text-5xl font-light text-white mt-4">
               Créations Récentes
             </h2>
-          </motion.div>
+          </MotionDiv>
 
           <div className="grid md:grid-cols-3 gap-6">
             {SHOWCASE_SUITS.map((suit, idx) => (
-              <motion.div
+              <MotionDiv
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -216,7 +219,7 @@ export default function Home() {
                   <h3 className="text-xl text-white font-medium">{suit.title}</h3>
                   <p className="text-white/70 text-sm mt-1">{suit.subtitle}</p>
                 </div>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
 
@@ -238,7 +241,7 @@ export default function Home() {
       <section className="py-24">
         <div className="container mx-auto px-6 lg:px-12">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -268,9 +271,9 @@ export default function Home() {
                   <span className="text-[#2d4a3e]">06 65 65 69 95</span>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
 
-            <motion.div
+            <MotionDiv
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -288,7 +291,7 @@ export default function Home() {
                   className="h-16"
                 />
               </div>
-            </motion.div>
+            </MotionDiv>
           </div>
         </div>
       </section>
@@ -296,7 +299,7 @@ export default function Home() {
       {/* Reviews Section */}
       <section className="py-24 bg-[#faf9f7] border-t border-[#d4b896]/20">
         <div className="container mx-auto px-6 lg:px-12">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -319,11 +322,11 @@ export default function Home() {
                </div>
                <p className="text-gray-500 text-sm">Basé sur 456 avis clients</p>
             </div>
-          </motion.div>
+          </MotionDiv>
 
           <div className="grid md:grid-cols-3 gap-8">
             {REVIEWS.slice(0, 3).map((review, idx) => (
-              <motion.div
+              <MotionDiv
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -348,7 +351,7 @@ export default function Home() {
                 <p className={`text-gray-600 font-light text-sm italic leading-relaxed ${review.language === 'ar' ? 'text-right' : ''}`}>
                   "{review.text}"
                 </p>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
 
@@ -368,7 +371,7 @@ export default function Home() {
       {/* Collaborations Section */}
       <section className="py-20 bg-[#f5f4f2] border-y border-[#d4b896]/20">
         <div className="container mx-auto px-6 lg:px-12">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -376,11 +379,11 @@ export default function Home() {
           >
             <span className="text-[#d4b896] text-sm tracking-[0.3em] uppercase">Partenaires</span>
             <h3 className="text-3xl md:text-4xl font-light text-[#2d4a3e] mt-4">Nos Collaborations</h3>
-          </motion.div>
+          </MotionDiv>
           
           <div className="flex flex-wrap justify-center items-center gap-12 md:gap-20">
             {PARTNERS.map((partner, idx) => (
-              <motion.div
+              <MotionDiv
                 key={partner.name}
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
@@ -393,7 +396,7 @@ export default function Home() {
                   alt={partner.name}
                   className="h-12 md:h-20 w-auto object-contain opacity-50 hover:opacity-100 transition-all duration-500 grayscale hover:grayscale-0"
                 />
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
         </div>
@@ -408,7 +411,7 @@ export default function Home() {
         />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 container mx-auto px-6 lg:px-12 text-center">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -429,7 +432,7 @@ export default function Home() {
                 <ChevronRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
-          </motion.div>
+          </MotionDiv>
         </div>
       </section>
 

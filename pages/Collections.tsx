@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { PRODUCTS } from '../lib/data';
+
+const { Link } = ReactRouterDOM;
+const MotionDiv = motion.div as any;
 
 const CATEGORIES = ['Tous', 'Costumes', 'Vestes', 'Chemises', 'Tuxedos', 'Accessoires'];
 
@@ -45,12 +48,12 @@ export default function Collections() {
       </div>
 
       <div className="container mx-auto px-6 lg:px-12 mt-16">
-        <motion.div 
+        <MotionDiv 
           layout
           className="grid md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12"
         >
           {filteredItems.map((item) => (
-            <motion.div
+            <MotionDiv
               layout
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -83,9 +86,9 @@ export default function Collections() {
                   </span>
                 </div>
               </Link>
-            </motion.div>
+            </MotionDiv>
           ))}
-        </motion.div>
+        </MotionDiv>
       </div>
     </div>
   );

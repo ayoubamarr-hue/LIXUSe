@@ -1,10 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { createPageUrl } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, Instagram, Facebook, ArrowUp } from 'lucide-react';
 import { Button } from './ui/button';
-import AiAssistant from './AiAssistant';
+
+const { Link, useLocation } = ReactRouterDOM;
+
+// Cast motion components to any to avoid strict type errors in some environments
+const MotionDiv = motion.div as any;
+const MotionButton = motion.button as any;
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -119,7 +124,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
       {/* Mobile Menu */}
       <AnimatePresence>
         {mobileMenuOpen && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -127,7 +132,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
           >
             <div className="flex flex-col items-center justify-center h-full gap-8">
               {NAV_LINKS.map((link, idx) => (
-                <motion.div
+                <MotionDiv
                   key={link.page}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -145,9 +150,9 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   >
                     {link.name}
                   </Link>
-                </motion.div>
+                </MotionDiv>
               ))}
-              <motion.div
+              <MotionDiv
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: NAV_LINKS.length * 0.1 }}
@@ -162,8 +167,8 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   >
                     Comment ça marche
                   </Link>
-                </motion.div>
-                <motion.div
+                </MotionDiv>
+                <MotionDiv
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: NAV_LINKS.length * 0.1 + 0.1 }}
@@ -178,8 +183,8 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   >
                     Galerie
                   </Link>
-                </motion.div>
-                <motion.div
+                </MotionDiv>
+                <MotionDiv
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: NAV_LINKS.length * 0.1 + 0.2 }}
@@ -194,9 +199,9 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   >
                     Contact
                   </Link>
-                </motion.div>
+                </MotionDiv>
               
-              <motion.div
+              <MotionDiv
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
@@ -204,9 +209,9 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
               >
                 <p className="text-sm">06 65 65 69 95</p>
                 <p className="text-sm mt-1">Hay Riad, Rabat</p>
-              </motion.div>
+              </MotionDiv>
             </div>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
 
@@ -272,13 +277,10 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
         </footer>
       )}
 
-      {/* AI Assistant */}
-      <AiAssistant />
-
       {/* Back to Top Button */}
       <AnimatePresence>
         {showBackToTop && !mobileMenuOpen && (
-          <motion.button
+          <MotionButton
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.5 }}
@@ -287,7 +289,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
             aria-label="Retour en haut"
           >
             <ArrowUp className="h-6 w-6" />
-          </motion.button>
+          </MotionButton>
         )}
       </AnimatePresence>
     </div>

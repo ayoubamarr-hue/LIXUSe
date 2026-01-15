@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { PRODUCTS } from '../lib/data';
 
+const MotionDiv = motion.div as any;
+
 // Duplicate products to simulate a larger gallery for demonstration
 const GALLERY_ITEMS = [...PRODUCTS, ...PRODUCTS].map((item, index) => ({
   ...item,
@@ -24,7 +26,7 @@ export default function Gallery() {
       <div className="container mx-auto px-6 lg:px-12 mt-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {GALLERY_ITEMS.map((item, idx) => (
-            <motion.div
+            <MotionDiv
               key={item.uniqueId}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -41,7 +43,7 @@ export default function Gallery() {
                 <span className="text-[#d4b896] text-xs uppercase tracking-widest mb-1">{item.category}</span>
                 <h3 className="text-white font-serif text-xl">{item.title}</h3>
               </div>
-            </motion.div>
+            </MotionDiv>
           ))}
         </div>
       </div>

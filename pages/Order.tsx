@@ -1,9 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { createPageUrl } from '../lib/utils';
 import { Scissors, Ruler, UserCheck, Package } from 'lucide-react';
+
+const { Link } = ReactRouterDOM;
+const MotionDiv = motion.div as any;
 
 const STEPS = [
   {
@@ -51,7 +54,7 @@ export default function Order() {
                  
                  <div className="space-y-16">
                     {STEPS.map((step, idx) => (
-                        <motion.div 
+                        <MotionDiv 
                             key={idx}
                             initial={{ opacity: 0, x: -30 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -69,14 +72,14 @@ export default function Order() {
                                     <step.icon className="h-8 w-8" />
                                 </div>
                             </div>
-                        </motion.div>
+                        </MotionDiv>
                     ))}
                  </div>
             </div>
 
             {/* Image Column */}
             <div className="w-full lg:w-1/2">
-                <motion.div
+                <MotionDiv
                     initial={{ opacity: 0, x: 30 }}
                     whileInView={{ opacity: 1, x: 0 }}
                     viewport={{ once: true }}
@@ -87,7 +90,7 @@ export default function Order() {
                         alt="LIXUS Process" 
                         className="w-full h-auto object-cover shadow-2xl border border-[#d4b896]/20"
                      />
-                </motion.div>
+                </MotionDiv>
             </div>
         </div>
 

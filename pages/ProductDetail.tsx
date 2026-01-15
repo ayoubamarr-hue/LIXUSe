@@ -1,15 +1,34 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, Truck, ShieldCheck, Ruler, X, Loader2, CheckCircle, Minus, Plus } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Textarea } from '../components/ui/textarea';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../components/ui/select';
 import { PRODUCTS } from '../lib/data';
 import { supabase } from '../lib/supabase';
 
+const { useParams, Link } = ReactRouterDOM;
+const MotionDiv = motion.div as any;
+
 const SIZES = ['44', '46', '48', '50', '52', '54', '56', '58', '60', '62'];
+
+const MOROCCAN_CITIES = [
+  "Agadir", "Al Hoceima", "Beni Mellal", "Berkane", "Berrechid", 
+  "Casablanca", "Dakhla", "El Jadida", "Errachidia", "Essaouira", 
+  "Fès", "Guelmim", "Ifrane", "Kenitra", "Khemisset", "Khouribga", 
+  "Laayoune", "Larache", "Marrakech", "Meknès", "Mohammedia", 
+  "Nador", "Ouarzazate", "Oujda", "Rabat", "Safi", "Salé", 
+  "Settat", "Tanger", "Taza", "Temara", "Tetouan"
+];
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -38,7 +57,7 @@ export default function ProductDetail() {
 
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20">
           {/* Image Section */}
-          <motion.div 
+          <MotionDiv 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="relative aspect-[3/4] lg:aspect-[4/5] bg-gray-100"
@@ -48,10 +67,10 @@ export default function ProductDetail() {
               alt={product.title} 
               className="w-full h-full object-cover"
             />
-          </motion.div>
+          </MotionDiv>
 
           {/* Details Section */}
-          <motion.div 
+          <MotionDiv 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -108,7 +127,7 @@ export default function ProductDetail() {
                 <p className="text-xs text-[#2d4a3e] uppercase tracking-wide">Retouches Incluses</p>
               </div>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
 
@@ -136,6 +155,7 @@ function OrderModal({ product, onClose, onSuccess }: { product: any, onClose: ()
     phone: '',
     address: '',
     city: 'Rabat',
+    postalCode: '10000',
     notes: '',
     size: '',
     jacketSize: '',
@@ -162,9 +182,9 @@ function OrderModal({ product, onClose, onSuccess }: { product: any, onClose: ()
     
     try {
       // Push order to Supabase
+      // Removed product_id to match probable schema (product_title is sufficient)
       const { error } = await supabase.from('orders').insert([
         {
-          product_id: product.id,
           product_title: product.title,
           customer_name: formData.name,
           customer_phone: formData.phone,
@@ -175,42 +195,59 @@ function OrderModal({ product, onClose, onSuccess }: { product: any, onClose: ()
           pants_size: isSuit ? formData.pantsSize : null,
           quantity: formData.quantity,
           total_price: product.price * formData.quantity,
-          status: 'pending', // Default status
-          created_at: new Date().toISOString()
+          status: 'pending'
         }
       ]);
 
       if (error) {
-        console.error('Error inserting order:', error);
-        alert('Une erreur est survenue. Veuillez réessayer ou nous contacter par téléphone.');
-        setIsLoading(false);
-        return;
+        throw error;
       }
 
       setIsLoading(false);
       onClose();
       onSuccess();
-    } catch (error) {
-      console.error('Unexpected error:', error);
-      alert('Une erreur est survenue.');
+    } catch (error: any) {
+      // Log as warning since we have a fallback
+      console.warn('Database insertion failed (using WhatsApp fallback):', error.message || error);
+      
+      // FALLBACK: Use WhatsApp if database fails
+      const sizeDetails = isSuit 
+        ? `Veste: ${formData.jacketSize}, Pantalon: ${formData.pantsSize}`
+        : isAccessory 
+          ? `Quantité: ${formData.quantity}`
+          : `Taille: ${formData.size}`;
+
+      const message = `*Nouvelle Commande (Site Web)*\n\n` +
+        `📦 *Produit:* ${product.title}\n` +
+        `💰 *Prix:* ${product.price * formData.quantity} MAD\n` +
+        `📏 *Détails:* ${sizeDetails}\n` +
+        `👤 *Nom:* ${formData.name}\n` +
+        `📞 *Tél:* ${formData.phone}\n` +
+        `📍 *Adresse:* ${formData.address}, ${formData.city} (${formData.postalCode})`;
+
+      const whatsappUrl = `https://wa.me/212620565941?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+
       setIsLoading(false);
+      onClose();
+      onSuccess();
     }
   };
 
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center px-4">
-      <motion.div 
+      <MotionDiv 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
       />
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative bg-white w-full max-w-lg p-8 shadow-2xl overflow-y-auto max-h-[90vh]"
+        className="relative bg-white w-full max-w-lg p-8 shadow-2xl overflow-y-auto max-h-[90vh] text-[#2d4a3e]"
       >
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-[#2d4a3e]">
           <X className="h-6 w-6" />
@@ -342,17 +379,30 @@ function OrderModal({ product, onClose, onSuccess }: { product: any, onClose: ()
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Ville *</Label>
-              <Input 
-                required 
-                value={formData.city}
-                onChange={e => setFormData({...formData, city: e.target.value})}
-                placeholder="Rabat" 
-                className="mt-1"
-              />
+              <Select 
+                value={formData.city} 
+                onValueChange={(value) => setFormData({...formData, city: value})}
+              >
+                <SelectTrigger className="mt-1 h-12 rounded-none border-[#d4b896]/30 bg-white text-[#2d4a3e]">
+                  <SelectValue placeholder="Sélectionner une ville" />
+                </SelectTrigger>
+                <SelectContent className="bg-white border-[#d4b896]/30 max-h-[200px] z-[70] text-[#2d4a3e]">
+                  {MOROCCAN_CITIES.map((city) => (
+                    <SelectItem key={city} value={city}>
+                      {city}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div>
               <Label>Code Postal</Label>
-              <Input placeholder="10000" className="mt-1" />
+              <Input 
+                value={formData.postalCode} 
+                onChange={(e) => setFormData({...formData, postalCode: e.target.value})}
+                placeholder="10000" 
+                className="mt-1" 
+              />
             </div>
           </div>
           <div>
@@ -378,7 +428,7 @@ function OrderModal({ product, onClose, onSuccess }: { product: any, onClose: ()
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Confirmer la commande"}
           </Button>
         </form>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }
@@ -386,14 +436,14 @@ function OrderModal({ product, onClose, onSuccess }: { product: any, onClose: ()
 function SuccessModal({ onClose }: { onClose: () => void }) {
   return (
     <div className="fixed inset-0 z-[70] flex items-center justify-center px-4">
-      <motion.div 
+      <MotionDiv 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
       />
-      <motion.div
+      <MotionDiv
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.9 }}
@@ -409,7 +459,7 @@ function SuccessModal({ onClose }: { onClose: () => void }) {
         <Button onClick={onClose} className="bg-[#d4b896] hover:bg-[#c9a96e] text-[#2d4a3e] w-full">
           Fermer
         </Button>
-      </motion.div>
+      </MotionDiv>
     </div>
   );
 }

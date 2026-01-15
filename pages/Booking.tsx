@@ -9,8 +9,11 @@ import Calendar from '../components/booking/Calendar';
 import TimeSlotPicker from '../components/booking/TimeSlotPicker';
 import { format } from 'date-fns';
 import fr from 'date-fns/locale/fr';
-import { useNavigate } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { supabase } from '../lib/supabase';
+
+const { useNavigate } = ReactRouterDOM;
+const MotionDiv = motion.div as any;
 
 const SERVICE_TYPES = [
   { value: 'consultation', label: 'Consultation & Sélection Tissus', duration: '45 min' },
@@ -161,7 +164,7 @@ export default function Booking() {
   if (bookingComplete) {
     return (
       <div className="min-h-screen bg-[#faf9f7] flex items-center justify-center p-6">
-        <motion.div
+        <MotionDiv
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-lg w-full text-center"
@@ -226,7 +229,7 @@ export default function Booking() {
           >
             Retour à l'accueil
           </Button>
-        </motion.div>
+        </MotionDiv>
       </div>
     );
   }
@@ -236,7 +239,7 @@ export default function Booking() {
       {/* Header */}
       <div className="bg-[#2d4a3e] py-16">
         <div className="container mx-auto px-6 lg:px-12">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-center"
@@ -249,7 +252,7 @@ export default function Booking() {
               Prenez rendez-vous pour une consultation personnalisée, une prise de mesures, 
               ou un essayage dans notre atelier de Hay Riad.
             </p>
-          </motion.div>
+          </MotionDiv>
         </div>
       </div>
 
@@ -287,7 +290,7 @@ export default function Booking() {
         <AnimatePresence mode="wait">
           {/* Step 1: Service Type */}
           {step === 1 && (
-            <motion.div
+            <MotionDiv
               key="step1"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -325,7 +328,7 @@ export default function Booking() {
               </div>
 
               {formData.service_type === 'consultation' && (
-                <motion.div
+                <MotionDiv
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   className="mt-6"
@@ -337,14 +340,14 @@ export default function Booking() {
                     placeholder="Ex: Costume, Chemise, Manteau..."
                     className="mt-2"
                   />
-                </motion.div>
+                </MotionDiv>
               )}
-            </motion.div>
+            </MotionDiv>
           )}
 
           {/* Step 2: Date & Time */}
           {step === 2 && (
-            <motion.div
+            <MotionDiv
               key="step2"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -377,12 +380,12 @@ export default function Booking() {
                   </>
                 )}
               </div>
-            </motion.div>
+            </MotionDiv>
           )}
 
           {/* Step 3: Contact Info */}
           {step === 3 && (
-            <motion.div
+            <MotionDiv
               key="step3"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -474,7 +477,7 @@ export default function Booking() {
                   </div>
                 </div>
               </div>
-            </motion.div>
+            </MotionDiv>
           )}
         </AnimatePresence>
 

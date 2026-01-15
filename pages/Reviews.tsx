@@ -7,6 +7,8 @@ import { Textarea } from '../components/ui/textarea';
 import { Label } from '../components/ui/label';
 import { REVIEWS } from '../lib/data';
 
+const MotionDiv = motion.div as any;
+
 export default function Reviews() {
   const [showForm, setShowForm] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -73,14 +75,14 @@ export default function Reviews() {
           <AnimatePresence>
             {showForm && (
               <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                 <motion.div 
+                 <MotionDiv 
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     onClick={() => setShowForm(false)}
                     className="absolute inset-0 bg-black/60 backdrop-blur-sm"
                   />
-                  <motion.div
+                  <MotionDiv
                     initial={{ opacity: 0, scale: 0.95, y: 20 }}
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -151,7 +153,7 @@ export default function Reviews() {
                         </Button>
                       </div>
                     </form>
-                  </motion.div>
+                  </MotionDiv>
               </div>
             )}
           </AnimatePresence>
@@ -159,7 +161,7 @@ export default function Reviews() {
           {/* Success Message */}
           <AnimatePresence>
             {isSuccess && (
-               <motion.div
+               <MotionDiv
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
@@ -170,14 +172,14 @@ export default function Reviews() {
                  </div>
                  <h4 className="text-green-800 font-medium text-lg">Merci pour votre avis !</h4>
                  <p className="text-green-700">Votre commentaire a été soumis et sera publié après modération.</p>
-               </motion.div>
+               </MotionDiv>
             )}
           </AnimatePresence>
 
           {/* Reviews List */}
           <div className="grid gap-6">
             {REVIEWS.map((review, idx) => (
-              <motion.div
+              <MotionDiv
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -206,7 +208,7 @@ export default function Reviews() {
                     {review.text}
                   </p>
                 </div>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
         </div>

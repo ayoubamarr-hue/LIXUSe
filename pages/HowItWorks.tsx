@@ -1,9 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { createPageUrl } from '../lib/utils';
 import { Calendar, Ruler, Scissors, Clock, Smile } from 'lucide-react';
+
+const { Link } = ReactRouterDOM;
+const MotionDiv = motion.div as any;
 
 const STEPS = [
   {
@@ -50,7 +53,7 @@ export default function HowItWorks() {
         <div className="max-w-4xl mx-auto">
           <div className="relative border-l-2 border-[#d4b896]/30 ml-4 md:ml-8 space-y-16">
             {STEPS.map((step, idx) => (
-              <motion.div 
+              <MotionDiv 
                 key={idx}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -71,7 +74,7 @@ export default function HowItWorks() {
                     {step.desc}
                   </p>
                 </div>
-              </motion.div>
+              </MotionDiv>
             ))}
           </div>
 

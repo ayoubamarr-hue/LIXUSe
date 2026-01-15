@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import * as ReactRouterDOM from 'react-router-dom';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Collections from './pages/Collections';
@@ -19,6 +19,8 @@ import Terms from './pages/Terms';
 import RefundPolicy from './pages/RefundPolicy';
 import AboutUs from './pages/aboutus';
 import Catalogue from './pages/Catalogue';
+
+const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM;
 
 const AppContent = () => {
   return (

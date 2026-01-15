@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 
+const MotionDiv = motion.div as any;
+
 export default function Fabrics() {
   return (
     <div className="bg-[#faf9f7]">
@@ -18,7 +20,7 @@ export default function Fabrics() {
 
       <div className="container mx-auto px-6 lg:px-12 py-24">
         <div className="grid md:grid-cols-2 gap-16 items-center mb-24">
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -42,8 +44,8 @@ export default function Fabrics() {
                 </li>
               ))}
             </ul>
-          </motion.div>
-          <motion.div
+          </MotionDiv>
+          <MotionDiv
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
@@ -58,7 +60,7 @@ export default function Fabrics() {
                <span className="block text-4xl font-serif text-[#2d4a3e]">5000+</span>
                <span className="text-sm uppercase tracking-wider text-gray-500">Références</span>
             </div>
-          </motion.div>
+          </MotionDiv>
         </div>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -79,7 +81,7 @@ export default function Fabrics() {
                img: "https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/fabric_dormeuil_03.jpg"
              }
            ].map((partner, idx) => (
-             <motion.div
+             <MotionDiv
               key={idx}
               whileHover={{ y: -10 }}
               className="bg-white p-8 border-t-4 border-[#d4b896] shadow-sm hover:shadow-xl transition-all"
@@ -89,7 +91,7 @@ export default function Fabrics() {
                <div className="h-48 overflow-hidden">
                   <img src={partner.img} alt={partner.name} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
                </div>
-             </motion.div>
+             </MotionDiv>
            ))}
         </div>
       </div>

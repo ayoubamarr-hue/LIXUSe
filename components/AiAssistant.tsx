@@ -5,6 +5,8 @@ import { MessageSquare, X, Send, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 
+const MotionDiv = motion.div as any;
+
 export default function AiAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'model', text: string}[]>([
@@ -82,7 +84,7 @@ export default function AiAssistant() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-4 font-sans">
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <MotionDiv
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -144,7 +146,7 @@ export default function AiAssistant() {
                 <Send className="h-4 w-4" />
               </Button>
             </form>
-          </motion.div>
+          </MotionDiv>
         )}
       </AnimatePresence>
 

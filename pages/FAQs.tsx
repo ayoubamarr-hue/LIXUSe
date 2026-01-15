@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { Plus, Minus } from 'lucide-react';
 import { useState } from 'react';
 
+const MotionDiv = motion.div as any;
+
 const QA_ITEMS = [
   {
     q: "Combien de temps faut-il pour confectionner un costume ?",
@@ -58,7 +60,7 @@ export default function FAQs() {
                   <Plus className="h-5 w-5 text-[#2d4a3e] shrink-0" />
                 )}
               </button>
-              <motion.div
+              <MotionDiv
                 initial={false}
                 animate={{ height: openIndex === idx ? 'auto' : 0, opacity: openIndex === idx ? 1 : 0 }}
                 className="overflow-hidden"
@@ -66,7 +68,7 @@ export default function FAQs() {
                 <div className="p-6 pt-0 text-gray-600 font-light leading-relaxed">
                   {item.a}
                 </div>
-              </motion.div>
+              </MotionDiv>
             </div>
           ))}
         </div>
