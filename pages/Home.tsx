@@ -11,7 +11,7 @@ const MotionDiv = motion.div as any;
 
 const HERO_IMAGES = [
   'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/FRONT%20STORE.jpg',
-  'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/giphy.gif',
+  'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/giphy.gif', // GIF kept as is to preserve animation
   'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_692f8580989c6da35c8a231f/9ab2aa467_beigesuit_9_2048x2048__47640.jpg',
   'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_692f8580989c6da35c8a231f/2ae98ae3f_post-lixusateliersartorial-apr-17-2023.jpg',
   'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_692f8580989c6da35c8a231f/060783940_post-lixusateliersartorial-aug-04-2023.jpeg'
@@ -69,6 +69,7 @@ export default function Home() {
               src={HERO_IMAGES[currentHero]}
               alt="LIXUS Bespoke Suit"
               className="w-full h-full object-cover"
+              loading={currentHero === 0 ? "eager" : "lazy"}
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
           </MotionDiv>
@@ -213,6 +214,7 @@ export default function Home() {
                   src={suit.image}
                   alt={suit.title}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6">
@@ -283,6 +285,7 @@ export default function Home() {
                 src="https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/481260599_688424273750179_1317721555920267174_n38.jpg"
                 alt="LIXUS Atelier"
                 className="w-full aspect-[4/5] object-cover"
+                loading="lazy"
               />
               <div className="absolute -bottom-6 -left-6 bg-[#2d4a3e] p-8 border border-[#d4b896]/20">
                 <img 
@@ -408,6 +411,7 @@ export default function Home() {
           src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/user_692f8580989c6da35c8a231f/13753b30f_dieter-betz-muenchen-900x675px.jpg"
           alt="Tailoring"
           className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
         />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 container mx-auto px-6 lg:px-12 text-center">

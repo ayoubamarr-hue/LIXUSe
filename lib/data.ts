@@ -84,7 +84,7 @@ export const PRODUCTS = [
     title: 'Cravate Sartoriale',
     category: 'Accessoires',
     price: 700,
-    image: 'https://images.unsplash.com/photo-1589756823695-278bc923f962?q=80&w=800&auto=format&fit=crop',
+    image: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/ACCS/cravatblue.jpeg',
     description: 'Une cravate en soie italienne tissée à la main. Le motif discret et la texture riche apportent la touche finale indispensable à votre tenue formelle.',
     features: ['100% Soie Italienne', 'Confection main', 'Doublure laine', 'Largeur 8cm'],
     material: 'Soie'
@@ -94,7 +94,7 @@ export const PRODUCTS = [
     title: 'Écharpe Cachemire',
     category: 'Accessoires',
     price: 1500,
-    image: 'https://images.unsplash.com/photo-1520903920243-00d872a2d1c9?q=80&w=800&auto=format&fit=crop',
+    image: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/ACCS/ECHARP.jpg',
     description: 'Enveloppez-vous de douceur avec cette écharpe en pur cachemire. Légère mais incroyablement chaude, elle est l\'accessoire indispensable des hivers élégants.',
     features: ['100% Cachemire Mongolie', 'Finitions frangées main', 'Toucher ultra-doux', 'Dimensions généreuses'],
     material: 'Cachemire'
@@ -104,7 +104,7 @@ export const PRODUCTS = [
     title: 'Pochette de Costume',
     category: 'Accessoires',
     price: 300,
-    image: 'https://images.unsplash.com/photo-1603252109303-27514432f357?q=80&w=800&auto=format&fit=crop',
+    image: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/ACCS/Printed-Pocket-Square.jpg',
     description: 'Le détail qui fait la différence. Cette pochette en soie aux bords roulottés à la main illumine la poche poitrine de votre veste.',
     features: ['100% Soie', 'Roulottée main', 'Imprimé exclusif', '33x33cm'],
     material: 'Soie'

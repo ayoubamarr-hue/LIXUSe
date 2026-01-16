@@ -2,14 +2,15 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { createPageUrl } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X, Instagram, Facebook, ArrowUp } from 'lucide-react';
+import { ArrowUp, Menu, X } from 'lucide-react';
 import { Button } from './ui/button';
 
 const { Link, useLocation } = ReactRouterDOM;
 
 // Cast motion components to any to avoid strict type errors in some environments
-const MotionDiv = motion.div as any;
 const MotionButton = motion.button as any;
+const MotionNav = motion.nav as any;
+const MotionDiv = motion.div as any;
 
 interface LayoutProps {
   children?: React.ReactNode;
@@ -28,9 +29,9 @@ const NAV_LINKS = [
 
 export default function Layout({ children, currentPageName }: LayoutProps) {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const lastScrollY = useRef(0);
   const location = useLocation();
 
@@ -40,7 +41,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
       
       // Determine header visibility
       // Hide when scrolling down more than 100px, show when scrolling up
-      if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+      if (currentScrollY > lastScrollY.current && currentScrollY > 100 && !isMobileMenuOpen) {
         setIsHeaderVisible(false);
       } else {
         setIsHeaderVisible(true);
@@ -57,10 +58,11 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMobileMenuOpen]);
 
+  // Close mobile menu on route change
   useEffect(() => {
-    setMobileMenuOpen(false);
+    setIsMobileMenuOpen(false);
   }, [location]);
 
   const scrollToTop = () => {
@@ -68,22 +70,28 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
   };
 
   const isHome = currentPageName === 'Home';
-  // Updated header background logic: Transparent on Home top, Dark Green otherwise
-  const headerBg = isScrolled || !isHome ? 'bg-[#2d4a3e] shadow-lg' : 'bg-transparent';
-  // Updated text color logic: Always beige as requested by design language
+  // Updated header background logic: Transparent on Home top (unless menu open), Dark Green otherwise
+  const headerBg = isScrolled || !isHome || isMobileMenuOpen ? 'bg-[#2d4a3e] shadow-lg' : 'bg-transparent';
   const textColor = 'text-[#d4b896]';
-
-  // Always show header if mobile menu is open
-  const headerVisible = isHeaderVisible || mobileMenuOpen;
 
   return (
     <div className="min-h-screen bg-[#faf9f7] flex flex-col">
       {/* Header */}
       <header 
-        className={`fixed w-full z-50 transition-all duration-500 transform ${headerBg} top-0 ${headerVisible ? 'translate-y-0' : '-translate-y-[150%]'}`}
+        className={`fixed w-full z-50 transition-all duration-500 transform ${headerBg} top-0 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-[150%]'}`}
       >
-        <div className="container mx-auto px-6 lg:px-12">
-          <div className="flex items-center justify-end h-24">
+        <div className="container mx-auto px-4 lg:px-12">
+          <div className="flex items-center justify-between h-20 lg:h-24">
+            
+            {/* Logo */}
+            <Link to={createPageUrl('Home')} className="flex-shrink-0">
+              <img 
+                src="https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/lixus+logo%20(1).png"
+                alt="LIXUS"
+                className="h-10 lg:h-12 w-auto"
+              />
+            </Link>
+
             {/* Desktop Nav */}
             <nav className="hidden lg:flex items-center gap-8">
               {NAV_LINKS.map((link) => (
@@ -109,111 +117,89 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
               ))}
             </nav>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`lg:hidden relative z-50 p-2 ${mobileMenuOpen ? 'text-[#d4b896]' : textColor}`}
-              aria-label="Menu"
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="lg:hidden text-[#d4b896] p-2"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="h-8 w-8" /> : <Menu className="h-8 w-8" />}
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
-      </header>
 
-      {/* Mobile Menu */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <MotionDiv
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-[#2d4a3e] lg:hidden"
-          >
-            <div className="flex flex-col items-center justify-center h-full gap-8">
-              {NAV_LINKS.map((link, idx) => (
-                <MotionDiv
-                  key={link.page}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: idx * 0.1 }}
-                >
-                  <Link
-                    to={createPageUrl(link.page)}
-                    className={`text-2xl font-light transition-colors ${
-                      link.highlight 
-                        ? 'text-[#d4b896]' 
-                        : currentPageName === link.page 
-                          ? 'text-[#d4b896]' 
-                          : 'text-white/80 hover:text-[#d4b896]'
-                    }`}
-                  >
-                    {link.name}
-                  </Link>
-                </MotionDiv>
-              ))}
-              <MotionDiv
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: NAV_LINKS.length * 0.1 }}
-                >
-                  <Link
-                    to={createPageUrl('HowItWorks')}
-                    className={`text-2xl font-light transition-colors ${
-                      currentPageName === 'HowItWorks'
-                        ? 'text-[#d4b896]' 
-                        : 'text-white/80 hover:text-[#d4b896]'
-                    }`}
-                  >
-                    Comment ça marche
-                  </Link>
-                </MotionDiv>
-                <MotionDiv
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: NAV_LINKS.length * 0.1 + 0.1 }}
-                >
-                  <Link
-                    to={createPageUrl('Gallery')}
-                    className={`text-2xl font-light transition-colors ${
-                      currentPageName === 'Gallery'
-                        ? 'text-[#d4b896]' 
-                        : 'text-white/80 hover:text-[#d4b896]'
-                    }`}
-                  >
-                    Galerie
-                  </Link>
-                </MotionDiv>
-                <MotionDiv
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: NAV_LINKS.length * 0.1 + 0.2 }}
-                >
-                  <Link
-                    to={createPageUrl('Contact')}
-                    className={`text-2xl font-light transition-colors ${
-                      currentPageName === 'Contact'
-                        ? 'text-[#d4b896]' 
-                        : 'text-white/80 hover:text-[#d4b896]'
-                    }`}
-                  >
-                    Contact
-                  </Link>
-                </MotionDiv>
-              
-              <MotionDiv
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.5 }}
-                className="mt-8 text-center text-[#d4b896]/60"
-              >
-                <p className="text-sm">06 65 65 69 95</p>
-                <p className="text-sm mt-1">Hay Riad, Rabat</p>
-              </MotionDiv>
-            </div>
-          </MotionDiv>
-        )}
-      </AnimatePresence>
+        {/* Mobile Nav - Vertical Menu Overlay */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <MotionNav
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'calc(100vh - 80px)', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="lg:hidden absolute top-full left-0 w-full bg-[#2d4a3e] border-t border-[#d4b896]/20 overflow-y-auto"
+            >
+               <div className="flex flex-col items-center justify-start gap-6 py-10 px-6 min-h-full">
+                  {NAV_LINKS.map((link, idx) => (
+                     <MotionDiv
+                        key={link.page}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className="w-full text-center"
+                     >
+                       <Link
+                         to={createPageUrl(link.page)}
+                         onClick={() => setIsMobileMenuOpen(false)}
+                         className={`text-xl font-serif tracking-wide transition-colors block py-2 ${
+                           link.highlight 
+                             ? 'bg-[#d4b896] text-[#2d4a3e] px-8 py-3 rounded-none mx-auto w-fit font-sans font-medium mt-2' 
+                             : currentPageName === link.page 
+                               ? 'text-white' 
+                               : 'text-[#d4b896] hover:text-white'
+                         }`}
+                       >
+                         {link.name}
+                       </Link>
+                     </MotionDiv>
+                  ))}
+                  
+                  <MotionDiv 
+                    initial={{ opacity: 0, width: 0 }}
+                    animate={{ opacity: 1, width: '4rem' }}
+                    transition={{ delay: 0.5 }}
+                    className="h-px bg-[#d4b896]/20 my-2" 
+                  />
+
+                  {/* Additional Mobile Links */}
+                  {[
+                    { name: 'Comment ça marche', page: 'HowItWorks' },
+                    { name: 'Galerie', page: 'Gallery' },
+                    { name: 'Contact', page: 'Contact' }
+                  ].map((link, idx) => (
+                    <MotionDiv
+                        key={link.page}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: (NAV_LINKS.length + idx) * 0.1 + 0.2 }}
+                        className="w-full text-center"
+                     >
+                       <Link 
+                         to={createPageUrl(link.page)} 
+                         onClick={() => setIsMobileMenuOpen(false)}
+                         className={`text-base font-light transition-colors block py-1 ${currentPageName === link.page ? 'text-white' : 'text-[#d4b896]/80 hover:text-white'}`}
+                       >
+                         {link.name}
+                       </Link>
+                     </MotionDiv>
+                  ))}
+                  
+                  {/* Bottom padding to ensure content isn't cut off */}
+                  <div className="h-12" />
+               </div>
+            </MotionNav>
+          )}
+        </AnimatePresence>
+      </header>
 
       {/* Page Content */}
       <main className={`flex-grow ${isHome ? '' : 'pt-24'}`}>
@@ -264,8 +250,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                   </a>
                   <p className="pt-2">06 65 65 69 95</p>
                   <div className="flex gap-4 pt-4">
-                    <a href="https://instagram.com/lixusateliersartorial" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors"><Instagram className="h-5 w-5" /></a>
-                    <a href="https://web.facebook.com/lixusateliersartorial" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors"><Facebook className="h-5 w-5" /></a>
+                    {/* Icons would go here */}
                   </div>
                 </div>
               </div>
@@ -279,7 +264,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
 
       {/* Back to Top Button */}
       <AnimatePresence>
-        {showBackToTop && !mobileMenuOpen && (
+        {showBackToTop && (
           <MotionButton
             initial={{ opacity: 0, scale: 0.5 }}
             animate={{ opacity: 1, scale: 1 }}

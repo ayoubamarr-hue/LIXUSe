@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, X, Check, ChevronDown, Search, ArrowRight, Copy } from 'lucide-react';
+import { Filter, X, Check, ChevronDown, Search, ArrowRight, Copy, Plus, Minus } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 
@@ -110,6 +110,17 @@ const FABRICS: Fabric[] = [
     pattern: "Plain",
     image: "https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/tissus/Silk%20Blend%20Midnight%20Blue.jpg"
   },
+  {
+    id: "zegna-9",
+    name: "15 MILMIL 15 Striped Grey Hazelnut",
+    brand: "Zegna",
+    collection: "15MILMIL15",
+    pricePerMeter: 2600,
+    season: "Winter",
+    weight: "280g",
+    pattern: "Striped",
+    image: "https://www.tessin.it/media/catalog/product/cache/e3a6d4fe5c6306a2ca1ada008b15dbf3/e/z/ez-217-0141-02.jpg"
+  },
 
   // 🇮🇹 REDA FABRICS
   {
@@ -218,7 +229,17 @@ export default function Catalogue() {
   const [priceRange, setPriceRange] = useState<[number, number]>([1500, 6000]);
   const [sortBy, setSortBy] = useState<"price-asc" | "price-desc" | "newest">("newest");
   const [selectedFabric, setSelectedFabric] = useState<Fabric | null>(null);
+  const [meters, setMeters] = useState(3.0);
   const [copied, setCopied] = useState(false);
+  const [zoom, setZoom] = useState({ x: 0, y: 0, isActive: false });
+
+  // Reset meters and zoom when modal opens
+  useEffect(() => {
+    if (selectedFabric) {
+      setMeters(3.0);
+      setZoom({ x: 0, y: 0, isActive: false });
+    }
+  }, [selectedFabric]);
 
   // Derive unique options
   const brands = Array.from(new Set(FABRICS.map(f => f.brand)));
@@ -275,13 +296,17 @@ export default function Catalogue() {
   const handleWhatsAppInquiry = () => {
     if (!selectedFabric) return;
 
+    const totalPrice = selectedFabric.pricePerMeter * meters;
+
     // Use template literal without indentation to preserve formatting in URL
     const message = `Bonjour, je suis intéressé par ce tissu :
 Nom : ${selectedFabric.name}
 Référence: ${selectedFabric.id.toUpperCase()}
 Marque : ${selectedFabric.brand}
 Collection : ${selectedFabric.collection}
-Prix : ${selectedFabric.pricePerMeter} MAD / mètre
+Métrage souhaité : ${meters.toFixed(1)} mètres
+Prix unitaire : ${selectedFabric.pricePerMeter} MAD / mètre
+Prix Total estimé : ${totalPrice} MAD
 Image : ${selectedFabric.image}`;
 
     const whatsappUrl = `https://wa.me/212620565941?text=${encodeURIComponent(message)}`;
@@ -294,6 +319,17 @@ Image : ${selectedFabric.image}`;
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleZoomMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoom({ x, y, isActive: true });
+  };
+
+  const handleZoomLeave = () => {
+    setZoom(prev => ({ ...prev, isActive: false }));
   };
 
   return (
@@ -570,13 +606,25 @@ Image : ${selectedFabric.image}`;
                  <X className="h-5 w-5 text-[#2d4a3e]" />
                </button>
 
-               <div className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100">
+               <div 
+                 className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 relative overflow-hidden cursor-crosshair group"
+                 onMouseMove={handleZoomMove}
+                 onMouseLeave={handleZoomLeave}
+               >
                   <img 
                     src={selectedFabric.image} 
                     alt={selectedFabric.name} 
                     onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; }}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover transition-transform duration-200 ease-out will-change-transform"
+                    style={{
+                      transformOrigin: `${zoom.x}% ${zoom.y}%`,
+                      transform: zoom.isActive ? 'scale(2.5)' : 'scale(1)'
+                    }}
                   />
+                  <div className={`absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-[#2d4a3e] rounded-sm pointer-events-none transition-opacity duration-300 flex items-center gap-2 ${zoom.isActive ? 'opacity-0' : 'opacity-100'}`}>
+                     <Search className="h-3 w-3" />
+                     Survoler pour zoomer
+                  </div>
                </div>
 
                <div className="w-full md:w-1/2 p-8 overflow-y-auto">
@@ -603,6 +651,38 @@ Image : ${selectedFabric.image}`;
                       <span className="text-gray-400">Motif</span>
                       <span className="font-medium text-[#2d4a3e]">{selectedFabric.pattern}</span>
                     </div>
+                  </div>
+
+                  {/* Meter Selector */}
+                  <div className="mb-6 pt-6 border-t border-[#d4b896]/20">
+                    <div className="flex items-center justify-between mb-3">
+                        <span className="text-gray-500 text-sm">Métrage (mètres)</span>
+                        <span className="font-bold text-[#d4b896] text-lg">{(selectedFabric.pricePerMeter * meters).toLocaleString()} MAD</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => setMeters(Math.max(1, parseFloat((meters - 0.1).toFixed(1))))}
+                          className="rounded-none border-[#d4b896]/50 text-[#2d4a3e] w-12 h-12"
+                        >
+                          <Minus className="h-5 w-5" />
+                        </Button>
+                        <div className="flex-1 text-center font-serif text-2xl text-[#2d4a3e]">
+                          {meters.toFixed(1)} m
+                        </div>
+                        <Button 
+                          variant="outline" 
+                          size="icon" 
+                          onClick={() => setMeters(parseFloat((meters + 0.1).toFixed(1)))}
+                          className="rounded-none border-[#d4b896]/50 text-[#2d4a3e] w-12 h-12"
+                        >
+                          <Plus className="h-5 w-5" />
+                        </Button>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-3 text-center italic">
+                       Quantité recommandée pour un costume : 3.0 mètres
+                    </p>
                   </div>
 
                   <div className="mt-auto">
