@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as ReactRouterDOM from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, Truck, ShieldCheck, Ruler, X, Loader2, CheckCircle, Minus, Plus, ChevronRight, ChevronLeft, Star, ZoomIn } from 'lucide-react';
@@ -15,6 +15,8 @@ import {
 } from '../components/ui/select';
 import { PRODUCTS } from '../lib/data';
 import { supabase } from '../lib/supabase';
+import { db } from '../lib/firebase';
+import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 const { useParams, Link } = ReactRouterDOM;
 const MotionDiv = motion.div as any;
@@ -43,7 +45,9 @@ const MOROCCAN_CITIES = [
 
 export default function ProductDetail() {
   const { id } = useParams();
-  const product = PRODUCTS.find(p => p.id === id);
+  
+  const [product, setProduct] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Order State
   const [selectedColor, setSelectedColor] = useState(COLORS[0].name);
@@ -56,7 +60,61 @@ export default function ProductDetail() {
   
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setIsLoading(true);
+      
+      // 1. Try finding in static data first for instant render if matches
+      const staticProduct = PRODUCTS.find(p => p.id === id);
+      
+      // 2. Try fetching from Firebase
+      if (db && id) {
+        try {
+            // First try getting by doc ID
+            const docRef = doc(db, "products", id);
+            const docSnap = await getDoc(docRef);
+
+            if (docSnap.exists()) {
+                setProduct({ id: docSnap.id, ...docSnap.data() });
+                setIsLoading(false);
+                return;
+            } 
+            
+            // If not found by doc ID, try querying by 'id' field
+            const q = query(collection(db, "products"), where("id", "==", id));
+            const querySnapshot = await getDocs(q);
+            
+            if (!querySnapshot.empty) {
+                const docData = querySnapshot.docs[0];
+                setProduct({ id: docData.id, ...docData.data() });
+                setIsLoading(false);
+                return;
+            }
+        } catch (error) {
+            console.warn("Error fetching product from Firebase:", error);
+        }
+      }
+
+      // 3. Fallback to static data
+      if (staticProduct) {
+        setProduct(staticProduct);
+      }
+      setIsLoading(false);
+    };
+
+    fetchProduct();
+  }, [id]);
   
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#faf9f7] text-[#2d4a3e]">
+        <Loader2 className="h-10 w-10 animate-spin mb-4 text-[#d4b896]" />
+        <p>Chargement du produit...</p>
+      </div>
+    );
+  }
+
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#faf9f7] text-[#2d4a3e]">
@@ -337,14 +395,16 @@ export default function ProductDetail() {
               {/* Features List */}
               <div className="bg-[#faf9f7] border border-[#d4b896]/10 p-6 mb-8 rounded-sm">
                 <h3 className="font-serif text-[#2d4a3e] mb-4 text-lg text-center lg:text-left">Caractéristiques</h3>
-                <ul className="space-y-3">
-                  {product.features.map((feature, idx) => (
-                    <li key={idx} className="flex items-start text-gray-600 text-sm">
-                      <Check className="h-5 w-5 text-[#d4b896] mr-3 mt-0.5 flex-shrink-0" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                {product.features && (
+                    <ul className="space-y-3">
+                    {product.features.map((feature: string, idx: number) => (
+                        <li key={idx} className="flex items-start text-gray-600 text-sm">
+                        <Check className="h-5 w-5 text-[#d4b896] mr-3 mt-0.5 flex-shrink-0" />
+                        {feature}
+                        </li>
+                    ))}
+                    </ul>
+                )}
               </div>
 
               {/* Action Buttons */}

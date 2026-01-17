@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Filter, X, Check, ChevronDown, Search, ArrowRight, Copy, Plus, Minus } from 'lucide-react';
+import { Filter, X, Check, ChevronDown, Search, ArrowRight, Copy, Plus, Minus, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { db } from '../lib/firebase';
+import { collection, getDocs } from 'firebase/firestore';
 
 const MotionDiv = motion.div as any;
 
@@ -19,8 +21,8 @@ interface Fabric {
   image: string;
 }
 
-// 🔹 FABRIC CATALOGUE DATA
-const FABRICS: Fabric[] = [
+// 🔹 STATIC FALLBACK DATA
+const STATIC_FABRICS: Fabric[] = [
   // 🇮🇹 ZEGNA FABRICS
   {
     id: "zegna-1",
@@ -233,6 +235,45 @@ export default function Catalogue() {
   const [copied, setCopied] = useState(false);
   const [zoom, setZoom] = useState({ x: 0, y: 0, isActive: false });
 
+  // Data state
+  const [fabrics, setFabrics] = useState<Fabric[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch data from Firebase on mount
+  useEffect(() => {
+    async function fetchFabrics() {
+      // Safety check: if db failed to initialize, fallback immediately
+      if (!db) {
+        console.warn("Firebase DB not initialized. Using static data.");
+        setFabrics(STATIC_FABRICS);
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "fabrics"));
+        if (!querySnapshot.empty) {
+          const fetchedData = querySnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as Fabric[];
+          setFabrics(fetchedData);
+        } else {
+          // If database is empty or not configured, use static data
+          console.warn("No fabrics found in Firebase or connection failed. Using static fallback data.");
+          setFabrics(STATIC_FABRICS);
+        }
+      } catch (error) {
+        console.error("Error fetching fabrics from Firebase:", error);
+        // Fallback to static data on error
+        setFabrics(STATIC_FABRICS);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchFabrics();
+  }, []);
+
   // Reset meters and zoom when modal opens
   useEffect(() => {
     if (selectedFabric) {
@@ -241,14 +282,15 @@ export default function Catalogue() {
     }
   }, [selectedFabric]);
 
-  // Derive unique options
-  const brands = Array.from(new Set(FABRICS.map(f => f.brand)));
-  const seasons = Array.from(new Set(FABRICS.map(f => f.season)));
-  const patterns = Array.from(new Set(FABRICS.map(f => f.pattern)));
+  // Derive unique options from current data
+  // Cast to string[] to ensure type safety in filters
+  const brands = Array.from(new Set(fabrics.map(f => f.brand))) as string[];
+  const seasons = Array.from(new Set(fabrics.map(f => f.season))) as string[];
+  const patterns = Array.from(new Set(fabrics.map(f => f.pattern))) as string[];
 
   // Filtering Logic
   const filteredFabrics = useMemo(() => {
-    return FABRICS.filter(fabric => {
+    return fabrics.filter(fabric => {
       // Search
       if (searchQuery && !fabric.name.toLowerCase().includes(searchQuery.toLowerCase()) && !fabric.collection.toLowerCase().includes(searchQuery.toLowerCase())) {
         return false;
@@ -275,7 +317,7 @@ export default function Catalogue() {
       if (sortBy === 'price-desc') return b.pricePerMeter - a.pricePerMeter;
       return 0; // Default order
     });
-  }, [searchQuery, selectedBrands, selectedSeasons, selectedPatterns, priceRange, sortBy]);
+  }, [fabrics, searchQuery, selectedBrands, selectedSeasons, selectedPatterns, priceRange, sortBy]);
 
   const toggleFilter = (item: string, current: string[], setter: React.Dispatch<React.SetStateAction<string[]>>) => {
     if (current.includes(item)) {
@@ -399,9 +441,9 @@ Image : ${selectedFabric.image}`;
                     <span key={f} className="text-xs bg-[#2d4a3e] text-white px-2 py-1 rounded-sm flex items-center gap-1">
                       {f}
                       <X className="h-3 w-3 cursor-pointer" onClick={() => {
-                         if(brands.includes(f as any)) toggleFilter(f, selectedBrands, setSelectedBrands);
-                         if(seasons.includes(f as any)) toggleFilter(f, selectedSeasons, setSelectedSeasons);
-                         if(patterns.includes(f as any)) toggleFilter(f, selectedPatterns, setSelectedPatterns);
+                         if(brands.includes(f)) toggleFilter(f, selectedBrands, setSelectedBrands);
+                         if(seasons.includes(f)) toggleFilter(f, selectedSeasons, setSelectedSeasons);
+                         if(patterns.includes(f)) toggleFilter(f, selectedPatterns, setSelectedPatterns);
                       }} />
                     </span>
                   ))}
@@ -526,7 +568,12 @@ Image : ${selectedFabric.image}`;
             </div>
 
             {/* Grid */}
-            {filteredFabrics.length > 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center py-24">
+                <Loader2 className="h-12 w-12 animate-spin text-[#d4b896] mb-4" />
+                <p className="text-gray-500 font-light">Chargement du catalogue...</p>
+              </div>
+            ) : filteredFabrics.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 <AnimatePresence>
                   {filteredFabrics.map((fabric) => (

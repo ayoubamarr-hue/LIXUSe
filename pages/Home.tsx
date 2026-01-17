@@ -84,11 +84,6 @@ export default function Home() {
               transition={{ delay: 0.5, duration: 0.8 }}
               className="max-w-2xl"
             >
-              <img 
-                src="https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/lixus+logo%20(1).png"
-                alt="LIXUS"
-                className="h-20 mb-8"
-              />
               <h1 className="text-5xl md:text-7xl font-light text-white mb-6 leading-tight tracking-wide">
                 L'Art du
                 <span className="block font-serif italic text-[#d4b896]">Sur Mesure</span>
