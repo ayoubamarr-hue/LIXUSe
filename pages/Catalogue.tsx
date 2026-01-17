@@ -3,8 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, X, Check, ChevronDown, Search, ArrowRight, Copy, Plus, Minus, Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { db } from '../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
 
 const MotionDiv = motion.div as any;
 
@@ -236,43 +234,8 @@ export default function Catalogue() {
   const [zoom, setZoom] = useState({ x: 0, y: 0, isActive: false });
 
   // Data state
-  const [fabrics, setFabrics] = useState<Fabric[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  // Fetch data from Firebase on mount
-  useEffect(() => {
-    async function fetchFabrics() {
-      // Safety check: if db failed to initialize, fallback immediately
-      if (!db) {
-        console.warn("Firebase DB not initialized. Using static data.");
-        setFabrics(STATIC_FABRICS);
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const querySnapshot = await getDocs(collection(db, "fabrics"));
-        if (!querySnapshot.empty) {
-          const fetchedData = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          })) as Fabric[];
-          setFabrics(fetchedData);
-        } else {
-          // If database is empty or not configured, use static data
-          console.warn("No fabrics found in Firebase or connection failed. Using static fallback data.");
-          setFabrics(STATIC_FABRICS);
-        }
-      } catch (error) {
-        console.error("Error fetching fabrics from Firebase:", error);
-        // Fallback to static data on error
-        setFabrics(STATIC_FABRICS);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchFabrics();
-  }, []);
+  const [fabrics] = useState<Fabric[]>(STATIC_FABRICS);
+  const [isLoading] = useState(false);
 
   // Reset meters and zoom when modal opens
   useEffect(() => {

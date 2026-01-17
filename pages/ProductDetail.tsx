@@ -15,8 +15,6 @@ import {
 } from '../components/ui/select';
 import { PRODUCTS } from '../lib/data';
 import { supabase } from '../lib/supabase';
-import { db } from '../lib/firebase';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
 
 const { useParams, Link } = ReactRouterDOM;
 const MotionDiv = motion.div as any;
@@ -62,44 +60,10 @@ export default function ProductDetail() {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    const fetchProduct = async () => {
+    const fetchProduct = () => {
       setIsLoading(true);
-      
-      // 1. Try finding in static data first for instant render if matches
       const staticProduct = PRODUCTS.find(p => p.id === id);
-      
-      // 2. Try fetching from Firebase
-      if (db && id) {
-        try {
-            // First try getting by doc ID
-            const docRef = doc(db, "products", id);
-            const docSnap = await getDoc(docRef);
-
-            if (docSnap.exists()) {
-                setProduct({ id: docSnap.id, ...docSnap.data() });
-                setIsLoading(false);
-                return;
-            } 
-            
-            // If not found by doc ID, try querying by 'id' field
-            const q = query(collection(db, "products"), where("id", "==", id));
-            const querySnapshot = await getDocs(q);
-            
-            if (!querySnapshot.empty) {
-                const docData = querySnapshot.docs[0];
-                setProduct({ id: docData.id, ...docData.data() });
-                setIsLoading(false);
-                return;
-            }
-        } catch (error) {
-            console.warn("Error fetching product from Firebase:", error);
-        }
-      }
-
-      // 3. Fallback to static data
-      if (staticProduct) {
-        setProduct(staticProduct);
-      }
+      setProduct(staticProduct || null);
       setIsLoading(false);
     };
 

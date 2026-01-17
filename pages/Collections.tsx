@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as ReactRouterDOM from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { PRODUCTS } from '../lib/data';
-import { db } from '../lib/firebase';
-import { collection, getDocs } from 'firebase/firestore';
 
 const { Link } = ReactRouterDOM;
 const MotionDiv = motion.div as any;
@@ -14,38 +12,8 @@ const CATEGORIES = ['Tous', 'Costumes', 'Vestes', 'Chemises', 'Tuxedos', 'Access
 
 export default function Collections() {
   const [filter, setFilter] = useState('Tous');
-  const [products, setProducts] = useState(PRODUCTS);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      if (!db) {
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        if (!querySnapshot.empty) {
-          const fetchedProducts = querySnapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-          })) as typeof PRODUCTS;
-          setProducts(fetchedProducts);
-        } else {
-           // Fallback to static data if DB is empty
-           setProducts(PRODUCTS);
-        }
-      } catch (error) {
-        console.warn("Error fetching products from Firebase, using static data:", error);
-        setProducts(PRODUCTS);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const [products] = useState(PRODUCTS);
+  const [isLoading] = useState(false);
 
   const filteredItems = filter === 'Tous' 
     ? products 
