@@ -617,7 +617,7 @@ Image : ${selectedFabric.image}`;
                </button>
 
                <div 
-                 className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 relative overflow-hidden cursor-crosshair group"
+                 className="w-full md:w-1/2 h-64 md:h-auto bg-gray-100 relative overflow-hidden cursor-zoom-in group"
                  onMouseMove={handleZoomMove}
                  onMouseLeave={handleZoomLeave}
                >
@@ -625,15 +625,16 @@ Image : ${selectedFabric.image}`;
                     src={selectedFabric.image} 
                     alt={selectedFabric.name} 
                     onError={(e) => { e.currentTarget.src = FALLBACK_IMAGE; }}
-                    className="w-full h-full object-cover transition-transform duration-200 ease-out will-change-transform"
+                    className="w-full h-full object-cover will-change-transform"
                     style={{
                       transformOrigin: `${zoom.x}% ${zoom.y}%`,
-                      transform: zoom.isActive ? 'scale(2.5)' : 'scale(1)'
+                      transform: zoom.isActive ? 'scale(2.5)' : 'scale(1)',
+                      transition: zoom.isActive ? 'none' : 'transform 0.2s ease-out'
                     }}
                   />
-                  <div className={`absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-[#2d4a3e] rounded-sm pointer-events-none transition-opacity duration-300 flex items-center gap-2 ${zoom.isActive ? 'opacity-0' : 'opacity-100'}`}>
+                  <div className={`absolute bottom-4 left-4 bg-[#2d4a3e] text-white px-3 py-1.5 text-xs font-medium rounded-sm transition-opacity duration-300 flex items-center gap-2 ${zoom.isActive ? 'opacity-50' : 'opacity-100'}`}>
                      <Search className="h-3 w-3" />
-                     Survoler pour zoomer
+                     {zoom.isActive ? 'Zoom actif' : 'Survoler pour zoomer'}
                   </div>
                </div>
 

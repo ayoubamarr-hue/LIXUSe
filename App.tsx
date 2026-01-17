@@ -19,6 +19,7 @@ import Terms from './pages/Terms';
 import RefundPolicy from './pages/RefundPolicy';
 import AboutUs from './pages/aboutus';
 import Catalogue from './pages/Catalogue';
+import DesignStudio from './pages/DesignStudio';
 
 const { HashRouter, Routes, Route, useLocation } = ReactRouterDOM;
 
@@ -30,6 +31,7 @@ const AppContent = () => {
       <Route path="/product/:id" element={<Layout currentPageName="Collections"><ProductDetail /></Layout>} />
       <Route path="/Fabrics" element={<Layout currentPageName="Fabrics"><Fabrics /></Layout>} />
       <Route path="/Catalogue" element={<Layout currentPageName="Catalogue"><Catalogue /></Layout>} />
+      <Route path="/DesignStudio" element={<Layout currentPageName="DesignStudio"><DesignStudio /></Layout>} />
       <Route path="/About" element={<Layout currentPageName="About"><About /></Layout>} />
       <Route path="/aboutus" element={<Layout currentPageName="AboutUs"><AboutUs /></Layout>} />
       <Route path="/Booking" element={<Layout currentPageName="Booking"><Booking /></Layout>} />

@@ -36,6 +36,7 @@ const SHOWCASE_SUITS = [
 ];
 
 const PARTNERS = [
+  { name: 'LORO PIANA', logo: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/Loro-Piana-Logo.png' },
   { name: 'ZEGNA', logo: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/zegna-trs.png' },
   { name: 'REDA 1865', logo: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/reda-trs.png' },
   { name: 'DRAGO', logo: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/drago.png' },

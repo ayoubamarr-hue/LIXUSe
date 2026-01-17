@@ -16,7 +16,7 @@ import {
 import { PRODUCTS } from '../lib/data';
 import { supabase } from '../lib/supabase';
 
-const { useParams, Link } = ReactRouterDOM;
+const { useParams, Link, useNavigate } = ReactRouterDOM;
 const MotionDiv = motion.div as any;
 
 const SIZES = ['44', '46', '48', '50', '52', '54', '56', '58', '60', '62'];
@@ -43,6 +43,7 @@ const MOROCCAN_CITIES = [
 
 export default function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,11 +65,37 @@ export default function ProductDetail() {
       setIsLoading(true);
       const staticProduct = PRODUCTS.find(p => p.id === id);
       setProduct(staticProduct || null);
+      
+      if (staticProduct) {
+        // Set default color based on product ID
+        if (staticProduct.id === 'gala-black-tie') {
+          setSelectedColor('Noir');
+        } else if (staticProduct.id === 'gala-white-tie') {
+          setSelectedColor('Blanc');
+        } else {
+          setSelectedColor('Blanc');
+        }
+      }
+
       setIsLoading(false);
     };
 
     fetchProduct();
   }, [id]);
+
+  const handleColorSelect = (colorName: string) => {
+    // Redirect logic for Gala Ties
+    if (product.id === 'gala-black-tie' && colorName === 'Blanc') {
+      navigate('/product/gala-white-tie');
+      return;
+    }
+    if (product.id === 'gala-white-tie' && colorName === 'Noir') {
+      navigate('/product/gala-black-tie');
+      return;
+    }
+    
+    setSelectedColor(colorName);
+  };
   
   if (isLoading) {
     return (
@@ -248,7 +275,7 @@ export default function ProductDetail() {
                         {COLORS.map((color) => (
                             <button
                                 key={color.name}
-                                onClick={() => setSelectedColor(color.name)}
+                                onClick={() => handleColorSelect(color.name)}
                                 className={`w-10 h-10 rounded-full border-2 transition-all relative ${
                                     selectedColor === color.name 
                                         ? 'border-[#2d4a3e] scale-110 ring-2 ring-[#2d4a3e] ring-offset-2' 
@@ -274,41 +301,35 @@ export default function ProductDetail() {
                                 <Label className="text-sm text-gray-500 w-full text-center lg:text-left">Taille Veste (EU)</Label>
                                 <span className="text-xs underline cursor-pointer text-[#d4b896] whitespace-nowrap">Guide des tailles</span>
                             </div>
-                            <div className="grid grid-cols-5 gap-2">
-                                {SIZES.map(size => (
-                                    <button
-                                        key={`jacket-${size}`}
-                                        onClick={() => setSelectedJacketSize(size)}
-                                        className={`py-3 text-sm border transition-all ${
-                                            selectedJacketSize === size
-                                                ? 'bg-[#2d4a3e] text-white border-[#2d4a3e]'
-                                                : 'border-gray-200 text-gray-600 hover:border-[#d4b896] bg-white'
-                                        }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
+                            <Select value={selectedJacketSize} onValueChange={setSelectedJacketSize}>
+                                <SelectTrigger className="w-full h-12 rounded-none border-[#d4b896]/30 bg-white text-[#2d4a3e]">
+                                    <SelectValue placeholder="Sélectionner la taille veste" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white border-[#d4b896]/30 max-h-[200px] z-[70] text-[#2d4a3e]">
+                                    {SIZES.map((size) => (
+                                        <SelectItem key={`jacket-${size}`} value={size}>
+                                            {size}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                         <div>
                             <div className="flex justify-between items-center mb-3 px-1">
                                 <Label className="text-sm text-gray-500 w-full text-center lg:text-left">Taille Pantalon (EU)</Label>
                             </div>
-                            <div className="grid grid-cols-5 gap-2">
-                                {SIZES.map(size => (
-                                    <button
-                                        key={`pants-${size}`}
-                                        onClick={() => setSelectedPantsSize(size)}
-                                        className={`py-3 text-sm border transition-all ${
-                                            selectedPantsSize === size
-                                                ? 'bg-[#2d4a3e] text-white border-[#2d4a3e]'
-                                                : 'border-gray-200 text-gray-600 hover:border-[#d4b896] bg-white'
-                                        }`}
-                                    >
-                                        {size}
-                                    </button>
-                                ))}
-                            </div>
+                            <Select value={selectedPantsSize} onValueChange={setSelectedPantsSize}>
+                                <SelectTrigger className="w-full h-12 rounded-none border-[#d4b896]/30 bg-white text-[#2d4a3e]">
+                                    <SelectValue placeholder="Sélectionner la taille pantalon" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white border-[#d4b896]/30 max-h-[200px] z-[70] text-[#2d4a3e]">
+                                    {SIZES.map((size) => (
+                                        <SelectItem key={`pants-${size}`} value={size}>
+                                            {size}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
                 ) : !isAccessory ? (
@@ -317,21 +338,18 @@ export default function ProductDetail() {
                              <Label className="text-sm text-gray-500 w-full text-center lg:text-left">Taille {isShirt ? '(Col)' : ''}</Label>
                              <span className="text-xs underline cursor-pointer text-[#d4b896] whitespace-nowrap">Guide des tailles</span>
                         </div>
-                        <div className="grid grid-cols-5 gap-2">
-                            {availableSizes.map(size => (
-                                <button
-                                    key={size}
-                                    onClick={() => setSelectedSize(size)}
-                                    className={`py-3 text-sm border transition-all ${
-                                        selectedSize === size
-                                            ? 'bg-[#2d4a3e] text-white border-[#2d4a3e]'
-                                            : 'border-gray-200 text-gray-600 hover:border-[#d4b896] bg-white'
-                                    }`}
-                                >
-                                    {size}
-                                </button>
-                            ))}
-                        </div>
+                        <Select value={selectedSize} onValueChange={setSelectedSize}>
+                            <SelectTrigger className="w-full h-12 rounded-none border-[#d4b896]/30 bg-white text-[#2d4a3e]">
+                                <SelectValue placeholder={`Sélectionner la taille ${isShirt ? '(Col)' : ''}`} />
+                            </SelectTrigger>
+                            <SelectContent className="bg-white border-[#d4b896]/30 max-h-[200px] z-[70] text-[#2d4a3e]">
+                                {availableSizes.map((size) => (
+                                    <SelectItem key={size} value={size}>
+                                        {size}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                 ) : null}
 

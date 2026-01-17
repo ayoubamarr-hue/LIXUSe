@@ -80,6 +80,16 @@ export const PRODUCTS = [
     material: 'Satin de Soie'
   },
   {
+    id: 'gala-white-tie',
+    title: 'Gala White Tie',
+    category: 'Accessoires',
+    price: 300,
+    image: 'https://mkqdxjrautahxjawicyt.supabase.co/storage/v1/object/public/LIXUS/Generated%20Image%20January%2017,%202026%20-%2010_40PM.jpeg',
+    description: 'L\'élégance distinguée du White Tie. Ce nœud papillon en satin de soie blanc apporte une touche de lumière et de raffinement à votre tenue de cérémonie.',
+    features: ['100% Satin de Soie', 'Blanc pur', 'Texture riche', 'Ajustable'],
+    material: 'Satin de Soie'
+  },
+  {
     id: 'cravate-soie',
     title: 'Cravate Sartoriale',
     category: 'Accessoires',

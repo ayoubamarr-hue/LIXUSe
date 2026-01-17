@@ -21,6 +21,7 @@ const NAV_LINKS = [
   { name: 'Accueil', page: 'Home' },
   { name: 'Collections', page: 'Collections' },
   { name: 'Catalogue Tissus', page: 'Catalogue' },
+  { name: 'Studio', page: 'DesignStudio' },
   { name: 'L\'Atelier', page: 'About' },
   { name: 'Social', page: 'Social' },
   { name: 'Rendez-vous', page: 'Booking' },
@@ -226,6 +227,7 @@ export default function Layout({ children, currentPageName }: LayoutProps) {
                 <div className="space-y-3 text-sm">
                   <Link to={createPageUrl('Collections')} className="block text-[#d4b896]/70 hover:text-white transition-colors">Collections</Link>
                   <Link to={createPageUrl('Catalogue')} className="block text-[#d4b896]/70 hover:text-white transition-colors">Catalogue Tissus</Link>
+                  <Link to={createPageUrl('DesignStudio')} className="block text-[#d4b896]/70 hover:text-white transition-colors">Design Studio</Link>
                   <Link to={createPageUrl('HowItWorks')} className="block text-[#d4b896]/70 hover:text-white transition-colors">Comment ça marche</Link>
                   <Link to={createPageUrl('Gallery')} className="block text-[#d4b896]/70 hover:text-white transition-colors">Galerie Clients</Link>
                   <Link to={createPageUrl('Reviews')} className="block text-[#d4b896]/70 hover:text-white transition-colors">Avis Clients</Link>
